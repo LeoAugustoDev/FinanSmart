@@ -28,6 +28,7 @@
             <th scope="col">Nome</th>
             <th scope="col">Tipo</th>
             <th scope="col" class="number">Saldo inicial</th>
+            <th scope="col" class="number">Saldo atual</th>
             <th scope="col">Ações</th>
           </tr>
         </thead>
@@ -42,6 +43,9 @@
               </td>
               <td>{{ typeLabels[account.type] }}</td>
               <td class="number">{{ account.initialBalance | currency: account.currency }}</td>
+              <td class="number" [class.amount-expense]="account.currentBalance < 0">
+                {{ account.currentBalance | currency: account.currency }}
+              </td>
               <td class="row-actions">
                 <a class="button" [routerLink]="[account.id, 'editar']">Editar</a>
                 @if (account.archived) {

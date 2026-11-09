@@ -23,6 +23,7 @@ import com.finansmart_server.account.dto.UpdateAccountRequest;
 import com.finansmart_server.account.exception.AccountNotFoundException;
 import com.finansmart_server.account.exception.DuplicateAccountNameException;
 import com.finansmart_server.shared.CurrentUser;
+import com.finansmart_server.transaction.TransactionRepository;
 
 class AccountServiceTests {
 
@@ -32,12 +33,15 @@ class AccountServiceTests {
 
 	private final CurrentUser currentUser = mock(CurrentUser.class);
 
-	private final AccountService service = new AccountService(this.repository, this.currentUser);
+	private final TransactionRepository transactions = mock(TransactionRepository.class);
+
+	private final AccountService service = new AccountService(this.repository, this.transactions, this.currentUser);
 
 	@BeforeEach
 	void setUp() {
 		given(this.currentUser.id()).willReturn(USER);
 		given(this.repository.saveAndFlush(any())).willAnswer((invocation) -> invocation.getArgument(0));
+		given(this.transactions.sumNetOfAccount(any())).willReturn(BigDecimal.ZERO);
 	}
 
 	@Test

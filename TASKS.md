@@ -16,6 +16,7 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 - **T-02:** concluída.
 - **T-03:** concluída.
 - **T-04:** concluída, incluindo o bloqueio de exclusão de contas e categorias com lançamentos.
+- **T-05:** concluída.
 
 ## Separação das tasks
 
@@ -309,4 +310,49 @@ Tela em `/lancamentos` com filtros por período, conta e categoria, lista pagina
 - [x] Teste de isolamento entre usuários passando
 - [x] Tela de lançamentos funcionando contra a API real
 - [x] Endpoints visíveis no Swagger
+- [x] Testes do backend e do frontend passando
+
+---
+
+## T-05 · Saldo e painel
+
+### Objetivo
+
+Mostrar quanto o usuário tem em cada conta e no total, em uma tela inicial com o resumo do mês.
+
+### Depende de
+
+T-04 Lançamentos.
+
+### Regras de negócio
+
+| # | Regra |
+|---|---|
+| RN-01 | Saldo atual da conta = saldo inicial + receitas − despesas, sem armazenar o valor calculado |
+| RN-02 | O saldo pode ser negativo |
+| RN-03 | O saldo total soma apenas as contas ativas; contas arquivadas ficam fora |
+| RN-04 | Receitas, despesas e resultado do painel consideram só o mês informado |
+| RN-05 | O mês vem do cliente, porque "mês atual" depende do fuso horário do usuário |
+| RN-06 | O painel mostra os 5 lançamentos mais recentes de todo o histórico |
+
+### Backend
+
+`currentBalance` foi adicionado às respostas de `/api/v1/accounts`, calculado com consulta agrupada, sem uma consulta por conta.
+
+| Método | Rota | Sucesso | Erros |
+|---|---|---|---|
+| GET | `/api/v1/dashboard?month=YYYY-MM` | 200 | 400 |
+
+### Frontend (Angular)
+
+Painel em `/painel` com saldo total, resumo do mês, contas e últimos lançamentos. A tela de contas ganhou a coluna "Saldo atual".
+
+### Critérios de aceite
+
+- [x] Saldo atual correto após criar, editar e excluir lançamentos
+- [x] Saldo total sem contas arquivadas
+- [x] Resumo do mês respeitando os limites do período
+- [x] Teste de isolamento entre usuários passando
+- [x] Painel funcionando contra a API real
+- [x] Endpoint visível no Swagger
 - [x] Testes do backend e do frontend passando
