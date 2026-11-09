@@ -87,6 +87,30 @@ body {
   margin: 1rem 0;
 }
 
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  align-items: end;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.amount-income {
+  color: var(--color-primary);
+}
+
+.amount-expense {
+  color: var(--color-danger);
+}
+
 .alert {
   padding: 0.75rem 1rem;
   background: #fdecea;

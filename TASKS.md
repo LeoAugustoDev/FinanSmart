@@ -13,8 +13,9 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 
 - **T-00:** concluída, com monorepo, Compose, Flyway sem migrations, perfis dev/demo, ProblemDetail, CORS, Swagger e Angular.
 - **T-01:** concluída, com login, cadastro e logout no Keycloak, guard, interceptor e endpoint `/api/v1/me`.
-- **T-02:** concluída. A RN-07 passa a valer de fato na T-04, quando os lançamentos existirem.
-- **T-03:** concluída. A RN-07 passa a valer de fato na T-04, quando os lançamentos existirem.
+- **T-02:** concluída.
+- **T-03:** concluída.
+- **T-04:** concluída, incluindo o bloqueio de exclusão de contas e categorias com lançamentos.
 
 ## Separação das tasks
 
@@ -188,7 +189,7 @@ web/src/app/features/accounts/
 
 - [x] Migration aplicada pelo Flyway na subida
 - [x] Os 7 endpoints conforme a tabela
-- [x] RN-01 a RN-08 cobertas por testes (RN-07 será completada na T-04)
+- [x] RN-01 a RN-08 cobertas por testes
 - [x] Teste de isolamento entre usuários passando
 - [x] Tela de contas funcionando contra a API real, com login real no Keycloak e os quatro estados
 - [x] Endpoints visíveis no Swagger
@@ -250,8 +251,62 @@ Tela em `/categorias` com filtro por tipo, selo "Padrão" e ações apenas nas c
 
 - [x] Migration aplicada pelo Flyway na subida, com as categorias padrão
 - [x] Os 5 endpoints conforme a tabela
-- [x] RN-01 a RN-07 cobertas por testes (RN-07 será completada na T-04)
+- [x] RN-01 a RN-07 cobertas por testes
 - [x] Teste de isolamento entre usuários passando
 - [x] Tela de categorias funcionando contra a API real
+- [x] Endpoints visíveis no Swagger
+- [x] Testes do backend e do frontend passando
+
+---
+
+## T-04 · Lançamentos
+
+### Objetivo
+
+Registrar receitas e despesas em uma conta, com categoria, data e descrição. Saldo (T-05), orçamentos (T-06), relatório (T-07) e detector de vazamentos (T-08) dependem desta task.
+
+### Depende de
+
+T-02 Contas e T-03 Categorias.
+
+### Regras de negócio
+
+| # | Regra |
+|---|---|
+| RN-01 | Conta, categoria, valor e data são obrigatórios; descrição é opcional, com até 255 caracteres |
+| RN-02 | Valor maior que zero, com no máximo 2 casas decimais |
+| RN-03 | Receita ou despesa vem do tipo da categoria, sem campo próprio |
+| RN-04 | A conta deve ser do usuário, e a categoria deve ser padrão ou do usuário; do contrário responde 400 no campo |
+| RN-05 | Conta arquivada não recebe novos lançamentos, mas os que já estão nela podem ser editados |
+| RN-06 | Lançamento de outro usuário responde 404 |
+| RN-07 | Conta ou categoria com lançamentos não pode ser excluída: responde 409 |
+
+### Backend
+
+Migration `V3__create_transactions.sql`.
+
+Endpoints em `/api/v1/transactions`, todos autenticados:
+
+| Método | Rota | Sucesso | Erros |
+|---|---|---|---|
+| POST | `/` | 201 + Location | 400 |
+| GET | `/?from=&to=&accountId=&categoryId=&page=&size=` | 200 | 400 |
+| GET | `/{id}` | 200 | 404 |
+| PUT | `/{id}` | 200 | 400, 404 |
+| DELETE | `/{id}` | 204 | 404 |
+
+A listagem vem da data mais recente para a mais antiga, com 20 itens por página por padrão e no máximo 100.
+
+### Frontend (Angular)
+
+Tela em `/lancamentos` com filtros por período, conta e categoria, lista paginada e valores coloridos por tipo. O formulário mostra apenas as categorias do tipo escolhido.
+
+### Critérios de aceite
+
+- [x] Migration aplicada pelo Flyway na subida
+- [x] Os 5 endpoints conforme a tabela
+- [x] RN-01 a RN-07 cobertas por testes
+- [x] Teste de isolamento entre usuários passando
+- [x] Tela de lançamentos funcionando contra a API real
 - [x] Endpoints visíveis no Swagger
 - [x] Testes do backend e do frontend passando

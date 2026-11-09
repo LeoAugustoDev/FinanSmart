@@ -24,5 +24,11 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/categories/categories.routes').then((m) => m.categoryRoutes),
   },
+  {
+    path: 'lancamentos',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/transactions/transactions.routes').then((m) => m.transactionRoutes),
+  },
   { path: '**', redirectTo: '' },
 ];
