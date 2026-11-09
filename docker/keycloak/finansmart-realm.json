@@ -1,7 +1,11 @@
 {
   "realm": "finansmart",
+  "displayName": "FinanSmart",
   "enabled": true,
+  "loginTheme": "finansmart",
   "registrationAllowed": true,
+  "rememberMe": true,
+  "resetPasswordAllowed": true,
   "internationalizationEnabled": true,
   "supportedLocales": ["pt-BR"],
   "defaultLocale": "pt-BR",
