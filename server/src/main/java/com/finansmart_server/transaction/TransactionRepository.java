@@ -61,6 +61,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
 			@Param("to") LocalDate to);
 
 	@Query("""
+			select t.category.id as categoryId, t.category.name as categoryName, sum(t.amount) as total
+			from Transaction t
+			where t.userId = :userId and t.occurredOn >= :from and t.occurredOn < :to
+			  and t.category.type = com.finansmart_server.category.CategoryType.EXPENSE
+			group by t.category.id, t.category.name
+			""")
+	List<NamedCategoryTotal> sumExpensesByNamedCategory(@Param("userId") String userId,
+			@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+	@Query("""
 			select coalesce(sum(t.amount), 0)
 			from Transaction t
 			where t.userId = :userId and t.category.id = :categoryId
@@ -97,6 +107,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
 		UUID getCategoryId();
 
 		BigDecimal getTotal();
+
+	}
+
+	interface NamedCategoryTotal extends CategoryTotal {
+
+		String getCategoryName();
 
 	}
 

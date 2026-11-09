@@ -35,5 +35,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/budgets/budgets.routes').then((m) => m.budgetRoutes),
   },
+  {
+    path: 'relatorio',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/reports/monthly-report/monthly-report').then((m) => m.MonthlyReportPage),
+  },
   { path: '**', redirectTo: '' },
 ];

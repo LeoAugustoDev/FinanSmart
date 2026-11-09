@@ -1,0 +1,154 @@
+<section class="card">
+  <div class="page-header">
+    <h2>Relatório mensal</h2>
+  </div>
+
+  <div class="field filter">
+    <label for="month">Mês</label>
+    <input id="month" type="month" [value]="month()" (change)="changeMonth($event)" />
+  </div>
+
+  @if (!month()) {
+    <p>Selecione um mês para ver o relatório.</p>
+  } @else if (report.isLoading()) {
+    <p>Carregando relatório...</p>
+  } @else if (report.error()) {
+    <p role="alert">Não foi possível carregar o relatório.</p>
+    <button type="button" class="primary" (click)="report.reload()">Tentar de novo</button>
+  } @else if (isEmpty()) {
+    <p>Nenhum lançamento neste mês nem no mês anterior.</p>
+    <a class="button primary" routerLink="/lancamentos/novo">Criar lançamento</a>
+  } @else if (report.value(); as data) {
+    <div class="summary-grid">
+      @for (card of cards(); track card.id) {
+        <div class="summary-card" [id]="card.id">
+          <span>{{ card.label }}</span>
+          <strong [class.amount-expense]="card.id === 'result' && card.comparison.current < 0">
+            {{ card.comparison.current | currency: 'BRL' }}
+          </strong>
+          <small
+            class="change"
+            [class.change-good]="card.comparison.change !== 0 && card.comparison.change > 0 === card.increaseIsGood"
+            [class.change-bad]="card.comparison.change !== 0 && card.comparison.change > 0 !== card.increaseIsGood"
+          >
+            <span aria-hidden="true">{{ arrow(card.comparison.change) }}</span>
+            <span class="visually-hidden">{{ direction(card.comparison.change) }}</span>
+            {{ abs(card.comparison.change) | currency: 'BRL' }}
+            @if (card.comparison.changePercent !== null) {
+              ({{ abs(card.comparison.changePercent) | number: '1.0-1' }}%)
+            }
+          </small>
+          <small>
+            {{ data.previousMonth + '-01' | date: 'MMMM' }}: {{ card.comparison.previous | currency: 'BRL' }}
+          </small>
+        </div>
+      }
+    </div>
+
+    <div class="section-header">
+      <h3>Receitas × despesas</h3>
+    </div>
+    <div class="chart" id="flowChart">
+      <div class="chart-legend">
+        <span><i class="swatch bar-current"></i>{{ data.month + '-01' | date: 'MMMM/yyyy' }}</span>
+        <span><i class="swatch bar-previous"></i>{{ data.previousMonth + '-01' | date: 'MMMM/yyyy' }}</span>
+      </div>
+      @for (card of cards().slice(0, 2); track card.id) {
+        <div class="bar-group">
+          <span class="bar-label">{{ card.label }}</span>
+          <div class="bar-lines">
+            <div class="bar-line" [title]="card.label + ' no mês: ' + (card.comparison.current | currency: 'BRL')">
+              <div class="bar-track">
+                <div class="bar bar-current" [style.width.%]="width(card.comparison.current, flowMax())"></div>
+              </div>
+              <span class="bar-value">{{ card.comparison.current | currency: 'BRL' }}</span>
+            </div>
+            <div
+              class="bar-line"
+              [title]="card.label + ' no mês anterior: ' + (card.comparison.previous | currency: 'BRL')"
+            >
+              <div class="bar-track">
+                <div class="bar bar-previous" [style.width.%]="width(card.comparison.previous, flowMax())"></div>
+              </div>
+              <span class="bar-value">{{ card.comparison.previous | currency: 'BRL' }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="section-header">
+      <h3>Gastos por categoria</h3>
+    </div>
+    @if (data.expensesByCategory.length === 0) {
+      <p>Nenhuma despesa neste mês nem no mês anterior.</p>
+    } @else {
+      @if (spentCategories().length === 0) {
+        <p>Nenhuma despesa neste mês.</p>
+      } @else {
+        <div class="chart" id="categoryChart">
+          @for (category of spentCategories(); track category.categoryId) {
+            <div
+              class="bar-group"
+              [title]="
+                category.categoryName +
+                ': ' +
+                (category.total | currency: 'BRL') +
+                ' (' +
+                (category.share | number: '1.0-1') +
+                '% das despesas)'
+              "
+            >
+              <span class="bar-label">{{ category.categoryName }}</span>
+              <div class="bar-line">
+                <div class="bar-track">
+                  <div class="bar bar-current" [style.width.%]="width(category.total, categoryMax())"></div>
+                </div>
+                <span class="bar-value">
+                  {{ category.total | currency: 'BRL' }}
+                  <small>{{ category.share | number: '1.0-1' }}%</small>
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="table-wrapper">
+        <table id="categories">
+          <thead>
+            <tr>
+              <th scope="col">Categoria</th>
+              <th scope="col" class="number">{{ data.month + '-01' | date: 'MMM/yyyy' }}</th>
+              <th scope="col" class="number">{{ data.previousMonth + '-01' | date: 'MMM/yyyy' }}</th>
+              <th scope="col" class="number">Variação</th>
+              <th scope="col" class="number">Participação</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (category of data.expensesByCategory; track category.categoryId) {
+              <tr>
+                <td>{{ category.categoryName }}</td>
+                <td class="number">{{ category.total | currency: 'BRL' }}</td>
+                <td class="number">{{ category.previousTotal | currency: 'BRL' }}</td>
+                <td
+                  class="number"
+                  [class.change-good]="category.change < 0"
+                  [class.change-bad]="category.change > 0"
+                >
+                  <span aria-hidden="true">{{ arrow(category.change) }}</span>
+                  <span class="visually-hidden">{{ direction(category.change) }}</span>
+                  {{ abs(category.change) | currency: 'BRL' }}
+                  @if (category.changePercent !== null) {
+                    ({{ abs(category.changePercent) | number: '1.0-1' }}%)
+                  }
+                </td>
+                <td class="number">{{ category.share | number: '1.0-1' }}%</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>
