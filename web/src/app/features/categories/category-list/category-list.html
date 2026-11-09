@@ -1,0 +1,60 @@
+<section class="card">
+  <div class="page-header">
+    <h2>Categorias</h2>
+    <a class="button primary" routerLink="nova">Nova categoria</a>
+  </div>
+
+  <div class="field filter">
+    <label for="typeFilter">Tipo</label>
+    <select id="typeFilter" (change)="changeFilter($event)">
+      <option value="">Todas</option>
+      @for (type of types; track type) {
+        <option [value]="type" [selected]="typeFilter() === type">{{ typeLabels[type] }}</option>
+      }
+    </select>
+  </div>
+
+  @if (actionError(); as message) {
+    <p class="alert" role="alert">{{ message }}</p>
+  }
+
+  @if (categories.isLoading()) {
+    <p>Carregando categorias...</p>
+  } @else if (categories.error()) {
+    <p role="alert">Não foi possível carregar as categorias.</p>
+    <button type="button" class="primary" (click)="categories.reload()">Tentar de novo</button>
+  } @else if (categories.value().length === 0) {
+    <p>Nenhuma categoria encontrada.</p>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of categories.value(); track category.id) {
+            <tr>
+              <td>
+                {{ category.name }}
+                @if (category.system) {
+                  <span class="badge">Padrão</span>
+                }
+              </td>
+              <td>{{ typeLabels[category.type] }}</td>
+              <td class="row-actions">
+                @if (!category.system) {
+                  <a class="button" [routerLink]="[category.id, 'editar']">Editar</a>
+                  <button type="button" (click)="remove(category)">Excluir</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
