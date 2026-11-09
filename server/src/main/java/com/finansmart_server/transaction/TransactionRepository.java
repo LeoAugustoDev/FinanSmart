@@ -50,6 +50,25 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
 	List<TypeTotal> sumByType(@Param("userId") String userId, @Param("from") LocalDate from,
 			@Param("to") LocalDate to);
 
+	@Query("""
+			select t.category.id as categoryId, sum(t.amount) as total
+			from Transaction t
+			where t.userId = :userId and t.occurredOn >= :from and t.occurredOn < :to
+			  and t.category.type = com.finansmart_server.category.CategoryType.EXPENSE
+			group by t.category.id
+			""")
+	List<CategoryTotal> sumExpensesByCategory(@Param("userId") String userId, @Param("from") LocalDate from,
+			@Param("to") LocalDate to);
+
+	@Query("""
+			select coalesce(sum(t.amount), 0)
+			from Transaction t
+			where t.userId = :userId and t.category.id = :categoryId
+			  and t.occurredOn >= :from and t.occurredOn < :to
+			""")
+	BigDecimal sumOfCategory(@Param("userId") String userId, @Param("categoryId") UUID categoryId,
+			@Param("from") LocalDate from, @Param("to") LocalDate to);
+
 	@EntityGraph(attributePaths = { "account", "category" })
 	Optional<Transaction> findByIdAndUserId(UUID id, String userId);
 
@@ -68,6 +87,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
 	interface TypeTotal {
 
 		CategoryType getType();
+
+		BigDecimal getTotal();
+
+	}
+
+	interface CategoryTotal {
+
+		UUID getCategoryId();
 
 		BigDecimal getTotal();
 

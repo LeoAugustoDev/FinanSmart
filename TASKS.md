@@ -17,6 +17,7 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 - **T-03:** concluída.
 - **T-04:** concluída, incluindo o bloqueio de exclusão de contas e categorias com lançamentos.
 - **T-05:** concluída.
+- **T-06:** concluída.
 
 ## Separação das tasks
 
@@ -355,4 +356,58 @@ Painel em `/painel` com saldo total, resumo do mês, contas e últimos lançamen
 - [x] Teste de isolamento entre usuários passando
 - [x] Painel funcionando contra a API real
 - [x] Endpoint visível no Swagger
+- [x] Testes do backend e do frontend passando
+
+---
+
+## T-06 · Orçamentos
+
+### Objetivo
+
+Definir um limite mensal por categoria de despesa e acompanhar quanto já foi consumido, com alerta perto de estourar.
+
+### Depende de
+
+T-04 Lançamentos.
+
+### Regras de negócio
+
+| # | Regra |
+|---|---|
+| RN-01 | Limite obrigatório, maior que zero, com no máximo 2 casas decimais |
+| RN-02 | Apenas categorias de despesa, padrão ou do próprio usuário; do contrário responde 400 no campo |
+| RN-03 | Um orçamento por categoria em cada mês: repetir responde 409 |
+| RN-04 | Gasto = soma das despesas da categoria no mês, em todas as contas, inclusive arquivadas |
+| RN-05 | Status: `OK` até 80% do limite, `WARNING` acima de 80% e `EXCEEDED` acima de 100% |
+| RN-06 | O status compara os valores exatos, sem o arredondamento do percentual exibido |
+| RN-07 | Depois de criado, só o limite pode mudar |
+| RN-08 | Orçamento de outro usuário responde 404 |
+| RN-09 | Categoria com orçamento não pode ser excluída: responde 409 |
+
+### Backend
+
+Migration `V4__create_budgets.sql`.
+
+Endpoints em `/api/v1/budgets`, todos autenticados:
+
+| Método | Rota | Sucesso | Erros |
+|---|---|---|---|
+| POST | `/` | 201 + Location | 400, 409 |
+| GET | `/?month=YYYY-MM` | 200 | 400 |
+| GET | `/{id}` | 200 | 404 |
+| PUT | `/{id}` (só o limite) | 200 | 400, 404 |
+| DELETE | `/{id}` | 204 | 404 |
+
+### Frontend (Angular)
+
+Tela em `/orcamentos` com seletor de mês, barra de consumo, percentual, valor restante, selo de status e aviso quando há orçamentos em alerta ou estourados.
+
+### Critérios de aceite
+
+- [x] Migration aplicada pelo Flyway na subida
+- [x] Os 5 endpoints conforme a tabela
+- [x] RN-01 a RN-09 cobertas por testes
+- [x] Teste de isolamento entre usuários passando
+- [x] Tela de orçamentos funcionando contra a API real
+- [x] Endpoints visíveis no Swagger
 - [x] Testes do backend e do frontend passando

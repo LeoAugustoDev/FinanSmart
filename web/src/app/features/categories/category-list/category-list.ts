@@ -43,7 +43,7 @@ export class CategoryList {
       error: (error: HttpErrorResponse) => {
         this.actionError.set(
           error.status === 409
-            ? 'Esta categoria está em uso por lançamentos e não pode ser excluída.'
+            ? 'Esta categoria está em uso por lançamentos ou orçamentos e não pode ser excluída.'
             : 'Não foi possível excluir a categoria.',
         );
         this.categories.reload();
