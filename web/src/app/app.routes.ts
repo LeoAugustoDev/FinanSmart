@@ -30,5 +30,10 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/transactions/transactions.routes').then((m) => m.transactionRoutes),
   },
+  {
+    path: 'orcamentos',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/budgets/budgets.routes').then((m) => m.budgetRoutes),
+  },
   { path: '**', redirectTo: '' },
 ];

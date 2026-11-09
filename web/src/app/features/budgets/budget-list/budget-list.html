@@ -1,0 +1,95 @@
+<section class="card">
+  <div class="page-header">
+    <h2>Orçamentos</h2>
+    <a class="button primary" routerLink="novo" [queryParams]="{ month: month() }">Novo orçamento</a>
+  </div>
+
+  <div class="field filter">
+    <label for="month">Mês</label>
+    <input id="month" type="month" [value]="month()" (change)="changeMonth($event)" />
+  </div>
+
+  @if (actionError(); as message) {
+    <p class="alert" role="alert">{{ message }}</p>
+  }
+
+  @if (!month()) {
+    <p>Selecione um mês para ver os orçamentos.</p>
+  } @else if (budgets.isLoading()) {
+    <p>Carregando orçamentos...</p>
+  } @else if (budgets.error()) {
+    <p role="alert">Não foi possível carregar os orçamentos.</p>
+    <button type="button" class="primary" (click)="budgets.reload()">Tentar de novo</button>
+  } @else if (budgets.value().length === 0) {
+    <p>Nenhum orçamento neste mês. Crie o primeiro.</p>
+  } @else {
+    @if (exceededCount() > 0) {
+      <p class="alert" role="status">
+        {{ exceededCount() === 1 ? '1 orçamento estourado' : exceededCount() + ' orçamentos estourados' }} neste mês.
+      </p>
+    }
+    @if (warningCount() > 0) {
+      <p class="notice" role="status">
+        {{ warningCount() === 1 ? '1 orçamento passou' : warningCount() + ' orçamentos passaram' }} de 80% do limite.
+      </p>
+    }
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Categoria</th>
+            <th scope="col">Consumo</th>
+            <th scope="col" class="number">Gasto</th>
+            <th scope="col" class="number">Limite</th>
+            <th scope="col" class="number">Restante</th>
+            <th scope="col">Situação</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (budget of budgets.value(); track budget.id) {
+            <tr>
+              <td>{{ budget.categoryName }}</td>
+              <td>
+                <div
+                  class="budget-progress"
+                  role="progressbar"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  [attr.aria-valuenow]="barWidth(budget)"
+                  [attr.aria-label]="'Consumo de ' + budget.categoryName"
+                >
+                  <div
+                    [style.width.%]="barWidth(budget)"
+                    [class.status-warning]="budget.status === 'WARNING'"
+                    [class.status-exceeded]="budget.status === 'EXCEEDED'"
+                  ></div>
+                </div>
+                <small>{{ budget.percentUsed | number: '1.0-1' }}%</small>
+              </td>
+              <td class="number">{{ budget.spent | currency: 'BRL' }}</td>
+              <td class="number">{{ budget.limit | currency: 'BRL' }}</td>
+              <td class="number" [class.amount-expense]="budget.remaining < 0">
+                {{ budget.remaining | currency: 'BRL' }}
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-warning]="budget.status === 'WARNING'"
+                  [class.badge-exceeded]="budget.status === 'EXCEEDED'"
+                >
+                  {{ statusLabels[budget.status] }}
+                </span>
+              </td>
+              <td class="row-actions">
+                <a class="button" [routerLink]="[budget.id, 'editar']">Editar</a>
+                <button type="button" (click)="remove(budget)">Excluir</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
