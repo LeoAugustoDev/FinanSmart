@@ -17,6 +17,9 @@ services:
     environment:
       - 'KC_BOOTSTRAP_ADMIN_USERNAME=admin'
       - 'KC_BOOTSTRAP_ADMIN_PASSWORD=admin'
+      # Valores lidos do arquivo .env, que não vai para o Git (modelo em .env.example).
+      - 'GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-nao-configurado}'
+      - 'GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-nao-configurado}'
     ports:
       - '127.0.0.1:8180:8080'
     volumes:
