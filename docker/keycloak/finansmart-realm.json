@@ -1,7 +1,11 @@
 {
   "realm": "finansmart",
+  "displayName": "FinanSmart",
   "enabled": true,
+  "loginTheme": "finansmart",
   "registrationAllowed": true,
+  "rememberMe": true,
+  "resetPasswordAllowed": true,
   "internationalizationEnabled": true,
   "supportedLocales": ["pt-BR"],
   "defaultLocale": "pt-BR",
@@ -18,6 +22,20 @@
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost:4200/*"
+      }
+    }
+  ],
+  "identityProviders": [
+    {
+      "alias": "google",
+      "displayName": "Google",
+      "providerId": "google",
+      "enabled": true,
+      "trustEmail": true,
+      "config": {
+        "clientId": "${GOOGLE_CLIENT_ID}",
+        "clientSecret": "${GOOGLE_CLIENT_SECRET}",
+        "defaultScope": "openid email profile"
       }
     }
   ],
