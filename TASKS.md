@@ -11,8 +11,8 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 
 ## Estado atual
 
-- **T-00:** concluída, com monorepo, Compose, Flyway sem migrations, perfis dev/demo, ProblemDetail, CORS, Swagger, Angular e CI.
-- **T-01:** a parte da API já existe (realm, cliente, validação de JWT e `CurrentUser`). Falta a integração no Angular.
+- **T-00:** concluída, com monorepo, Compose, Flyway sem migrations, perfis dev/demo, ProblemDetail, CORS, Swagger e Angular.
+- **T-01:** concluída, com login, cadastro e logout no Keycloak, guard, interceptor e endpoint `/api/v1/me`.
 
 ## Separação das tasks
 
@@ -20,7 +20,7 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 
 | Task | Entrega | Depende de |
 |---|---|---|
-| T-00 Setup do projeto | Monorepo `server/` + `web/`, Docker Compose com Postgres e Keycloak, Flyway, perfis dev/demo, handler global de erros (ProblemDetail), CORS, Swagger básico, GitHub Actions rodando os testes | — |
+| T-00 Setup do projeto | Monorepo `server/` + `web/`, Docker Compose com Postgres e Keycloak, Flyway, perfis dev/demo, handler global de erros (ProblemDetail), CORS, Swagger básico | — |
 | T-01 Autenticação com Keycloak | Realm e cliente importados no Compose, API validando o JWT do Keycloak, usuário atual pelo `sub`; no Angular, login, cadastro e logout por redirecionamento com PKCE, guard e interceptor | T-00 |
 
 ### MVP
@@ -190,7 +190,7 @@ web/src/app/features/accounts/
 - [ ] Teste de isolamento entre usuários passando
 - [ ] Tela de contas funcionando contra a API real, com login real no Keycloak e os quatro estados
 - [ ] Endpoints visíveis no Swagger
-- [ ] CI verde
+- [ ] Testes do backend e do frontend passando
 
 ### Git
 
