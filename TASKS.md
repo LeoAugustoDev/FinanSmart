@@ -19,6 +19,7 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 - **T-05:** concluída.
 - **T-06:** concluída.
 - **T-07:** concluída.
+- **T-08:** concluída.
 
 ## Separação das tasks
 
@@ -462,5 +463,60 @@ Os gráficos são feitos em HTML e CSS, sem biblioteca. Subir é bom em receitas
 - [x] Teste de isolamento entre usuários passando
 - [x] Tela do relatório funcionando contra a API real, com estados de carregamento, vazio e erro
 - [x] Gráficos legíveis em tela estreita
+- [x] Endpoint visível no Swagger
+- [x] Testes do backend e do frontend passando
+
+---
+
+## T-08 · Detector de vazamentos
+
+### Objetivo
+
+Mostrar o dinheiro que sai sem o usuário perceber: assinaturas recorrentes, tarifas e juros, e categorias que gastaram acima da própria média. O total aparece como "R$ X vazando este mês".
+
+### Depende de
+
+T-04 Lançamentos.
+
+### Regras de negócio
+
+| # | Regra |
+|---|---|
+| RN-01 | O detector analisa um mês e usa os três meses anteriores como histórico, inclusive na virada do ano |
+| RN-02 | Assinaturas: toda despesa do mês na categoria padrão "Assinaturas" |
+| RN-03 | Também é assinatura a cobrança recorrente: mesma descrição (sem diferenciar caixa e espaços) no mês e nos dois meses anteriores, com o total de cada mês anterior a até 10% do total do mês |
+| RN-04 | Cobrança recorrente não vale para as categorias padrão "Moradia", "Saúde" e "Educação" (gastos fixos que não são vazamento) nem para "Tarifas e juros" |
+| RN-05 | Tarifas e juros: toda despesa do mês na categoria padrão "Tarifas e juros" |
+| RN-06 | Assinaturas e tarifas são agrupadas por descrição e ordenadas pelo maior valor; lançamentos sem descrição formam um grupo por categoria |
+| RN-07 | Acima da média: categoria cujo gasto do mês passa em mais de 20% da média dos meses com gasto entre os três anteriores; só o excedente (gasto − média) conta como vazamento |
+| RN-08 | A média só existe quando a categoria teve gasto em pelo menos dois dos três meses anteriores |
+| RN-09 | Nenhum lançamento entra em dois detectores: assinaturas e tarifas ficam fora do cálculo de média |
+| RN-10 | As regras por nome valem só para categorias padrão do sistema; categoria do usuário com o mesmo nome não tem tratamento especial |
+| RN-11 | Total = assinaturas + tarifas e juros + excedentes acima da média |
+| RN-12 | Só entram despesas do próprio usuário, de todas as contas, inclusive arquivadas |
+
+### Backend
+
+Sem migration: os vazamentos são calculados a partir dos lançamentos. As regras ficam em `LeakDetector`, sem acesso a banco.
+
+| Método | Rota | Sucesso | Erros |
+|---|---|---|---|
+| GET | `/api/v1/leaks?month=YYYY-MM` | 200 | 400, 401 |
+
+Sem o parâmetro `month`, usa o mês atual do servidor.
+
+### Frontend (Angular)
+
+Tela em `/vazamentos` (item "Vazamentos" no menu) com seletor de mês, destaque "R$ X vazando este mês", um cartão com o total de cada detector e uma tabela por detector. Cobranças recorrentes levam o selo "Todo mês".
+
+O painel mostra o card "R$ X vazando este mês" com link para a tela, só quando há vazamento; se a busca falhar, o painel continua funcionando sem o card.
+
+### Critérios de aceite
+
+- [x] Endpoint conforme a tabela
+- [x] RN-01 a RN-12 cobertas por testes
+- [x] Teste de isolamento entre usuários passando
+- [x] Tela de vazamentos funcionando contra a API real, com estados de carregamento, vazio e erro
+- [x] Card "R$ X vazando este mês" no painel
 - [x] Endpoint visível no Swagger
 - [x] Testes do backend e do frontend passando

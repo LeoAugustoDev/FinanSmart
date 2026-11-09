@@ -79,6 +79,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
 	BigDecimal sumOfCategory(@Param("userId") String userId, @Param("categoryId") UUID categoryId,
 			@Param("from") LocalDate from, @Param("to") LocalDate to);
 
+	/** Despesas do período, uma linha por lançamento, só com o que o detector de vazamentos usa. */
+	@Query("""
+			select c.id as categoryId, c.name as categoryName, c.userId as categoryOwner,
+			       t.amount as amount, t.occurredOn as occurredOn, t.description as description
+			from Transaction t join t.category c
+			where t.userId = :userId and t.occurredOn >= :from and t.occurredOn < :to
+			  and c.type = com.finansmart_server.category.CategoryType.EXPENSE
+			""")
+	List<ExpenseRow> findExpenses(@Param("userId") String userId, @Param("from") LocalDate from,
+			@Param("to") LocalDate to);
+
 	@EntityGraph(attributePaths = { "account", "category" })
 	Optional<Transaction> findByIdAndUserId(UUID id, String userId);
 
@@ -113,6 +124,23 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
 	interface NamedCategoryTotal extends CategoryTotal {
 
 		String getCategoryName();
+
+	}
+
+	interface ExpenseRow {
+
+		UUID getCategoryId();
+
+		String getCategoryName();
+
+		/** Nulo quando a categoria é padrão do sistema. */
+		String getCategoryOwner();
+
+		BigDecimal getAmount();
+
+		LocalDate getOccurredOn();
+
+		String getDescription();
 
 	}
 

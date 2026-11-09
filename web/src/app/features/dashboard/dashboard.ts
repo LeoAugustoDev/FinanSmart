@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { ACCOUNT_TYPE_LABELS } from '../accounts/account.model';
+import { LeakService } from '../leaks/leak.service';
 import { DashboardService } from './dashboard.service';
 
 interface CurrentUser {
@@ -23,6 +24,7 @@ interface CurrentUser {
 })
 export class Dashboard {
   private readonly service = inject(DashboardService);
+  private readonly leakService = inject(LeakService);
 
   protected readonly typeLabels = ACCOUNT_TYPE_LABELS;
 
@@ -32,7 +34,18 @@ export class Dashboard {
     return user ? `Olá, ${user.name || user.username}` : 'Painel';
   });
 
+  private readonly month = formatDate(new Date(), 'yyyy-MM', 'en-US');
+
   protected readonly dashboard = rxResource({
-    stream: () => this.service.get(formatDate(new Date(), 'yyyy-MM', 'en-US')),
+    stream: () => this.service.get(this.month),
   });
+
+  private readonly leaks = rxResource({
+    stream: () => this.leakService.detect(this.month),
+  });
+
+  /** Indefinido enquanto carrega ou se falhar: o card é um extra e não derruba o painel. */
+  protected readonly leaking = computed(() =>
+    this.leaks.hasValue() ? this.leaks.value().total : undefined,
+  );
 }

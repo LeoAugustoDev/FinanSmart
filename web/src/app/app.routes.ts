@@ -41,5 +41,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/reports/monthly-report/monthly-report').then((m) => m.MonthlyReportPage),
   },
+  {
+    path: 'vazamentos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/leaks/leaks').then((m) => m.LeaksPage),
+  },
   { path: '**', redirectTo: '' },
 ];
