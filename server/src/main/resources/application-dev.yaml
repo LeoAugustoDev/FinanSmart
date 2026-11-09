@@ -1,0 +1,14 @@
+spring:
+  docker:
+    compose:
+      # Caminho relativo à pasta server/, de onde a aplicação é executada.
+      file: ../compose.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/finansmart
+
+app:
+  cors:
+    allowed-origins: http://localhost:4200
