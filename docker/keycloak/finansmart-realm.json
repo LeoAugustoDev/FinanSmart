@@ -2,6 +2,9 @@
   "realm": "finansmart",
   "enabled": true,
   "registrationAllowed": true,
+  "internationalizationEnabled": true,
+  "supportedLocales": ["pt-BR"],
+  "defaultLocale": "pt-BR",
   "clients": [
     {
       "clientId": "finansmart-web",
@@ -10,10 +13,11 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": ["http://localhost:*"],
-      "webOrigins": ["http://localhost:*"],
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["http://localhost:4200"],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:4200/*"
       }
     }
   ],
