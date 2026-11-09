@@ -14,6 +14,7 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 - **T-00:** concluída, com monorepo, Compose, Flyway sem migrations, perfis dev/demo, ProblemDetail, CORS, Swagger e Angular.
 - **T-01:** concluída, com login, cadastro e logout no Keycloak, guard, interceptor e endpoint `/api/v1/me`.
 - **T-02:** concluída. A RN-07 passa a valer de fato na T-04, quando os lançamentos existirem.
+- **T-03:** concluída. A RN-07 passa a valer de fato na T-04, quando os lançamentos existirem.
 
 ## Separação das tasks
 
@@ -202,3 +203,55 @@ Branch `feat/T-02-contas` · commits sugeridos:
 - `feat(accounts): endpoints REST`
 - `test(accounts): testes`
 - `feat(web): tela de contas`
+
+---
+
+## T-03 · Categorias
+
+### Objetivo
+
+Classificar receitas e despesas com categorias padrão do sistema e categorias criadas por cada usuário. Lançamentos (T-04), orçamentos (T-06) e relatórios (T-07) dependem desta task.
+
+### Depende de
+
+T-01 Autenticação com Keycloak.
+
+### Regras de negócio
+
+| # | Regra |
+|---|---|
+| RN-01 | Nome obrigatório, de 1 a 60 caracteres, sem espaços nas pontas |
+| RN-02 | Tipos: `EXPENSE` (despesa) e `INCOME` (receita) |
+| RN-03 | Nome único por tipo entre as categorias que o usuário vê (padrão e próprias), sem diferenciar maiúsculas de minúsculas |
+| RN-04 | Categorias padrão são visíveis para todos e somente leitura: alterar ou excluir responde 403 |
+| RN-05 | O tipo não muda depois de criado, porque define o sinal dos lançamentos já feitos |
+| RN-06 | Categoria pessoal de outro usuário responde 404 |
+| RN-07 | Só pode ser excluída se não tiver lançamentos (passa a valer de fato na T-04) |
+
+### Backend
+
+Migration `V2__create_categories.sql`, com `user_id` nulo nas categorias padrão e dois índices únicos parciais.
+
+Endpoints em `/api/v1/categories`, todos autenticados:
+
+| Método | Rota | Sucesso | Erros |
+|---|---|---|---|
+| POST | `/` | 201 + Location | 400, 409 |
+| GET | `/?type=` | 200 | 400 |
+| GET | `/{id}` | 200 | 404 |
+| PUT | `/{id}` (só o nome) | 200 | 400, 403, 404, 409 |
+| DELETE | `/{id}` | 204 | 403, 404, 409 |
+
+### Frontend (Angular)
+
+Tela em `/categorias` com filtro por tipo, selo "Padrão" e ações apenas nas categorias pessoais. Formulário com o tipo bloqueado na edição.
+
+### Critérios de aceite
+
+- [x] Migration aplicada pelo Flyway na subida, com as categorias padrão
+- [x] Os 5 endpoints conforme a tabela
+- [x] RN-01 a RN-07 cobertas por testes (RN-07 será completada na T-04)
+- [x] Teste de isolamento entre usuários passando
+- [x] Tela de categorias funcionando contra a API real
+- [x] Endpoints visíveis no Swagger
+- [x] Testes do backend e do frontend passando

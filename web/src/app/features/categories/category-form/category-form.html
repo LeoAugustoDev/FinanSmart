@@ -1,0 +1,57 @@
+<section class="card">
+  <h2>{{ categoryId === null ? 'Nova categoria' : 'Editar categoria' }}</h2>
+
+  @if (loading()) {
+    <p>Carregando categoria...</p>
+  } @else if (loadFailed()) {
+    <p role="alert">Não foi possível carregar a categoria.</p>
+    <div class="actions">
+      <button type="button" class="primary" (click)="load()">Tentar de novo</button>
+      <a class="button" routerLink="/categorias">Voltar</a>
+    </div>
+  } @else if (readOnly()) {
+    <p role="alert">Categorias padrão não podem ser editadas.</p>
+    <a class="button" routerLink="/categorias">Voltar</a>
+  } @else {
+    <form class="form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="field">
+        <label for="name">Nome</label>
+        <input id="name" type="text" formControlName="name" autocomplete="off" />
+        @if (form.controls.name.touched && form.controls.name.errors; as errors) {
+          <small class="field-error">
+            @if (errors['duplicate']) {
+              Já existe uma categoria desse tipo com esse nome.
+            } @else if (errors['maxlength']) {
+              O nome deve ter até {{ nameMaxLength }} caracteres.
+            } @else {
+              Informe o nome da categoria.
+            }
+          </small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="type">Tipo</label>
+        <select id="type" formControlName="type">
+          @for (type of types; track type) {
+            <option [value]="type">{{ typeLabels[type] }}</option>
+          }
+        </select>
+        @if (categoryId !== null) {
+          <small>O tipo não pode ser alterado depois de criado.</small>
+        }
+      </div>
+
+      @if (saveError(); as message) {
+        <p class="alert" role="alert">{{ message }}</p>
+      }
+
+      <div class="actions">
+        <button type="submit" class="primary" [disabled]="saving()">
+          {{ saving() ? 'Salvando...' : 'Salvar' }}
+        </button>
+        <a class="button" routerLink="/categorias">Cancelar</a>
+      </div>
+    </form>
+  }
+</section>

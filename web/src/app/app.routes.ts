@@ -18,5 +18,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/accounts/accounts.routes').then((m) => m.accountRoutes),
   },
+  {
+    path: 'categorias',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/categories/categories.routes').then((m) => m.categoryRoutes),
+  },
   { path: '**', redirectTo: '' },
 ];
