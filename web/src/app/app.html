@@ -2,7 +2,11 @@
   <h1><a routerLink="/">{{ title() }}</a></h1>
 
   @if (auth.isAuthenticated()) {
-    <button type="button" (click)="auth.logout()">Sair</button>
+    <nav class="menu">
+      <a routerLink="/painel">Painel</a>
+      <a routerLink="/contas">Contas</a>
+      <button type="button" (click)="auth.logout()">Sair</button>
+    </nav>
   }
 </header>
 
