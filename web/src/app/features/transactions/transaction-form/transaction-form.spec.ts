@@ -18,6 +18,7 @@ function account(id: string, archived = false): Account {
     name: `Conta ${id}`,
     type: 'CHECKING',
     initialBalance: 0,
+    currentBalance: 0,
     currency: 'BRL',
     archived,
     createdAt: '',

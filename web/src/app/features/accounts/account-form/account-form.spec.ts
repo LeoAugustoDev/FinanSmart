@@ -16,6 +16,7 @@ describe('AccountForm', () => {
     name: 'Nubank',
     type: 'SAVINGS',
     initialBalance: 1500,
+    currentBalance: 1500,
     currency: 'BRL',
     archived: false,
     createdAt: '',

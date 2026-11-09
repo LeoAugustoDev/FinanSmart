@@ -1,0 +1,100 @@
+<section class="card">
+  <h2>{{ greeting() }}</h2>
+
+  @if (dashboard.isLoading()) {
+    <p>Carregando seu painel...</p>
+  } @else if (dashboard.error()) {
+    <p role="alert">Não foi possível carregar seu painel.</p>
+    <button type="button" class="primary" (click)="dashboard.reload()">Tentar de novo</button>
+  } @else if (dashboard.value(); as data) {
+    <div class="summary-grid">
+      <div class="summary-card">
+        <span>Saldo total</span>
+        <strong id="totalBalance" [class.amount-expense]="data.totalBalance < 0">
+          {{ data.totalBalance | currency: 'BRL' }}
+        </strong>
+      </div>
+      <div class="summary-card">
+        <span>Receitas do mês</span>
+        <strong id="income" class="amount-income">{{ data.income | currency: 'BRL' }}</strong>
+      </div>
+      <div class="summary-card">
+        <span>Despesas do mês</span>
+        <strong id="expense" class="amount-expense">{{ data.expense | currency: 'BRL' }}</strong>
+      </div>
+      <div class="summary-card">
+        <span>Resultado do mês</span>
+        <strong id="result" [class.amount-expense]="data.result < 0">{{ data.result | currency: 'BRL' }}</strong>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h3>Contas</h3>
+      <a routerLink="/contas">Ver todas</a>
+    </div>
+    @if (data.accounts.length === 0) {
+      <p>Nenhuma conta ainda. Crie a primeira para acompanhar seu saldo.</p>
+      <a class="button primary" routerLink="/contas/nova">Criar conta</a>
+    } @else {
+      <div class="table-wrapper">
+        <table id="accounts">
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">Tipo</th>
+              <th scope="col" class="number">Saldo atual</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (account of data.accounts; track account.id) {
+              <tr>
+                <td>{{ account.name }}</td>
+                <td>{{ typeLabels[account.type] }}</td>
+                <td class="number" [class.amount-expense]="account.currentBalance < 0">
+                  {{ account.currentBalance | currency: account.currency }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <div class="section-header">
+      <h3>Últimos lançamentos</h3>
+      <a routerLink="/lancamentos">Ver todos</a>
+    </div>
+    @if (data.recentTransactions.length === 0) {
+      <p>Nenhum lançamento ainda.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table id="recent">
+          <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Categoria</th>
+              <th scope="col" class="number">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (transaction of data.recentTransactions; track transaction.id) {
+              <tr>
+                <td>{{ transaction.occurredOn | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ transaction.description ?? '—' }}</td>
+                <td>{{ transaction.categoryName }}</td>
+                <td
+                  class="number"
+                  [class.amount-income]="transaction.type === 'INCOME'"
+                  [class.amount-expense]="transaction.type === 'EXPENSE'"
+                >
+                  {{ transaction.type === 'EXPENSE' ? '-' : '+' }}{{ transaction.amount | currency: 'BRL' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>
