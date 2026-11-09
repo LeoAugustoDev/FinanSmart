@@ -1,0 +1,101 @@
+<section class="card">
+  <div class="page-header">
+    <h2>Lançamentos</h2>
+    <a class="button primary" routerLink="novo">Novo lançamento</a>
+  </div>
+
+  <div class="filters">
+    <div class="field">
+      <label for="from">De</label>
+      <input id="from" type="date" [value]="from()" (change)="updateFilter(from, $event)" />
+    </div>
+    <div class="field">
+      <label for="to">Até</label>
+      <input id="to" type="date" [value]="to()" (change)="updateFilter(to, $event)" />
+    </div>
+    <div class="field">
+      <label for="accountFilter">Conta</label>
+      <select id="accountFilter" (change)="updateFilter(accountId, $event)">
+        <option value="" [selected]="accountId() === ''">Todas</option>
+        @for (account of accountOptions(); track account.id) {
+          <option [value]="account.id" [selected]="accountId() === account.id">{{ account.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label for="categoryFilter">Categoria</label>
+      <select id="categoryFilter" (change)="updateFilter(categoryId, $event)">
+        <option value="" [selected]="categoryId() === ''">Todas</option>
+        @for (category of categoryOptions(); track category.id) {
+          <option [value]="category.id" [selected]="categoryId() === category.id">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+    @if (hasFilters()) {
+      <button type="button" class="filters-clear" (click)="clearFilters()">Limpar filtros</button>
+    }
+  </div>
+
+  @if (actionError(); as message) {
+    <p class="alert" role="alert">{{ message }}</p>
+  }
+
+  @if (invalidPeriod()) {
+    <p class="alert" role="alert">A data inicial deve ser anterior à data final.</p>
+  } @else if (transactions.isLoading()) {
+    <p>Carregando lançamentos...</p>
+  } @else if (transactions.error()) {
+    <p role="alert">Não foi possível carregar os lançamentos.</p>
+    <button type="button" class="primary" (click)="transactions.reload()">Tentar de novo</button>
+  } @else if (transactions.value(); as result) {
+    @if (result.content.length === 0) {
+      <p>
+        {{ hasFilters() ? 'Nenhum lançamento encontrado com esses filtros.' : 'Nenhum lançamento ainda. Crie o primeiro.' }}
+      </p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Descrição</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Conta</th>
+              <th scope="col" class="number">Valor</th>
+              <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (transaction of result.content; track transaction.id) {
+              <tr>
+                <td>{{ transaction.occurredOn | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ transaction.description ?? '—' }}</td>
+                <td>{{ transaction.categoryName }}</td>
+                <td>{{ transaction.accountName }}</td>
+                <td
+                  class="number"
+                  [class.amount-income]="transaction.type === 'INCOME'"
+                  [class.amount-expense]="transaction.type === 'EXPENSE'"
+                >
+                  {{ transaction.type === 'EXPENSE' ? '-' : '+' }}{{ transaction.amount | currency: 'BRL' }}
+                </td>
+                <td class="row-actions">
+                  <a class="button" [routerLink]="[transaction.id, 'editar']">Editar</a>
+                  <button type="button" (click)="remove(transaction, result.content.length === 1)">Excluir</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <nav class="pagination" aria-label="Paginação">
+        <button type="button" [disabled]="result.page === 0" (click)="goToPage(result.page - 1)">Anterior</button>
+        <span>Página {{ result.page + 1 }} de {{ result.totalPages }}</span>
+        <button type="button" [disabled]="result.page + 1 >= result.totalPages" (click)="goToPage(result.page + 1)">
+          Próxima
+        </button>
+      </nav>
+    }
+  }
+</section>
