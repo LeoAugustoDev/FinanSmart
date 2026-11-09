@@ -11,9 +11,11 @@ import { BudgetService } from '../budget.service';
 
 const MONEY_PATTERN = /^\d{1,17}(\.\d{1,2})?$/;
 
+import { DecimalInput } from '../../../shared/decimal-input';
+
 @Component({
   selector: 'app-budget-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [DecimalInput, ReactiveFormsModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './budget-form.html',
 })

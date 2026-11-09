@@ -9,9 +9,11 @@ import { AccountService } from '../account.service';
 const NAME_MAX_LENGTH = 60;
 const MONEY_PATTERN = /^-?\d{1,17}(\.\d{1,2})?$/;
 
+import { DecimalInput } from '../../../shared/decimal-input';
+
 @Component({
   selector: 'app-account-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [DecimalInput, ReactiveFormsModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './account-form.html',
 })

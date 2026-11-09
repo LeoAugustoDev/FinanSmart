@@ -20,9 +20,11 @@ import { TransactionService } from '../transaction.service';
 const DESCRIPTION_MAX_LENGTH = 255;
 const MONEY_PATTERN = /^\d{1,17}(\.\d{1,2})?$/;
 
+import { DecimalInput } from '../../../shared/decimal-input';
+
 @Component({
   selector: 'app-transaction-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [DecimalInput, ReactiveFormsModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './transaction-form.html',
 })
