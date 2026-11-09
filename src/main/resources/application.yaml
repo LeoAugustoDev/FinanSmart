@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: finansmart-server
+  jpa:
+    open-in-view: false
+    hibernate:
+      # O esquema é controlado pelo Flyway (src/main/resources/db/migration).
+      ddl-auto: validate
