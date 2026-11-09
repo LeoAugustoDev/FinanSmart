@@ -18,6 +18,7 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 - **T-04:** concluída, incluindo o bloqueio de exclusão de contas e categorias com lançamentos.
 - **T-05:** concluída.
 - **T-06:** concluída.
+- **T-07:** concluída.
 
 ## Separação das tasks
 
@@ -410,4 +411,56 @@ Tela em `/orcamentos` com seletor de mês, barra de consumo, percentual, valor r
 - [x] Teste de isolamento entre usuários passando
 - [x] Tela de orçamentos funcionando contra a API real
 - [x] Endpoints visíveis no Swagger
+- [x] Testes do backend e do frontend passando
+
+---
+
+## T-07 · Relatório mensal
+
+### Objetivo
+
+Mostrar como foi o mês: receitas contra despesas, onde o dinheiro foi gasto e o que mudou em relação ao mês anterior.
+
+### Depende de
+
+T-04 Lançamentos.
+
+### Regras de negócio
+
+| # | Regra |
+|---|---|
+| RN-01 | O relatório cobre um mês e sempre compara com o mês imediatamente anterior, inclusive na virada do ano |
+| RN-02 | Receitas, despesas e resultado (receitas − despesas) trazem valor do mês, valor anterior, diferença e variação percentual |
+| RN-03 | A variação percentual tem uma casa decimal e usa como base o valor absoluto do mês anterior |
+| RN-04 | Quando o mês anterior é zero, a variação percentual é nula, porque não há base de comparação |
+| RN-05 | Gastos por categoria incluem as categorias com despesa no mês ou no mês anterior |
+| RN-06 | Participação = gasto da categoria ÷ total de despesas do mês, com uma casa decimal; zero quando o mês não tem despesas |
+| RN-07 | Categorias ordenadas pelo maior gasto no mês e, no empate, pelo nome |
+| RN-08 | Entram os lançamentos de todas as contas, inclusive arquivadas |
+| RN-09 | Só entram lançamentos do próprio usuário |
+
+### Backend
+
+Sem migration: o relatório é calculado a partir dos lançamentos.
+
+| Método | Rota | Sucesso | Erros |
+|---|---|---|---|
+| GET | `/api/v1/reports/monthly?month=YYYY-MM` | 200 | 400, 401 |
+
+Sem o parâmetro `month`, usa o mês atual do servidor.
+
+### Frontend (Angular)
+
+Tela em `/relatorio` com seletor de mês, três cartões (receitas, despesas e resultado) com a variação, gráfico de barras de receitas × despesas dos dois meses, gráfico de barras dos gastos por categoria e tabela com a comparação por categoria.
+
+Os gráficos são feitos em HTML e CSS, sem biblioteca. Subir é bom em receitas e resultado e ruim em despesas; a direção aparece também em texto, não só na cor.
+
+### Critérios de aceite
+
+- [x] Endpoint conforme a tabela
+- [x] RN-01 a RN-09 cobertas por testes
+- [x] Teste de isolamento entre usuários passando
+- [x] Tela do relatório funcionando contra a API real, com estados de carregamento, vazio e erro
+- [x] Gráficos legíveis em tela estreita
+- [x] Endpoint visível no Swagger
 - [x] Testes do backend e do frontend passando
