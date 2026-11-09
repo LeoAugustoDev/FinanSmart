@@ -1,19 +1,52 @@
-<header class="topbar">
-  <h1><a routerLink="/">{{ title() }}</a></h1>
+<div class="shell" [class.shell-guest]="!auth.isAuthenticated()">
+  <header class="sidebar">
+    <h1 class="brand">
+      <a routerLink="/">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="9" fill="currentColor" opacity="0.16" />
+          <path d="M8 21l5-6 4 3 7-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="24" cy="9" r="2.2" fill="currentColor" />
+        </svg>
+        <span>{{ title() }}</span>
+      </a>
+    </h1>
 
-  @if (auth.isAuthenticated()) {
-    <nav class="menu">
-      <a routerLink="/painel">Painel</a>
-      <a routerLink="/contas">Contas</a>
-      <a routerLink="/categorias">Categorias</a>
-      <a routerLink="/lancamentos">Lançamentos</a>
-      <a routerLink="/orcamentos">Orçamentos</a>
-      <a routerLink="/relatorio">Relatório</a>
-      <button type="button" (click)="auth.logout()">Sair</button>
-    </nav>
-  }
-</header>
+    @if (auth.isAuthenticated()) {
+      <nav class="menu" aria-label="Principal">
+        <a routerLink="/painel" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-4H4zM14 8h6V4h-6z" /></svg>
+          Painel
+        </a>
+        <a routerLink="/contas" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v12H3zM3 11h18M7 15h4" /></svg>
+          Contas
+        </a>
+        <a routerLink="/categorias" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7l9 9-7 7-9-9zM8 8h.01" /></svg>
+          Categorias
+        </a>
+        <a routerLink="/lancamentos" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3" /></svg>
+          Lançamentos
+        </a>
+        <a routerLink="/orcamentos" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z" /><path d="M15 3.5A9 9 0 0 1 20.5 9H15z" /></svg>
+          Orçamentos
+        </a>
+        <a routerLink="/relatorio" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3" /></svg>
+          Relatório
+        </a>
+      </nav>
 
-<main class="content">
-  <router-outlet />
-</main>
+      <button type="button" class="logout" (click)="auth.logout()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5M15 8l4 4-4 4M19 12H9" /></svg>
+        Sair
+      </button>
+    }
+  </header>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>
