@@ -1,0 +1,60 @@
+<section class="card">
+  <div class="page-header">
+    <h2>Contas</h2>
+    <a class="button primary" routerLink="nova">Nova conta</a>
+  </div>
+
+  <label class="check">
+    <input type="checkbox" [checked]="showArchived()" (change)="toggleArchived($event)" />
+    Mostrar arquivadas
+  </label>
+
+  @if (actionError(); as message) {
+    <p class="alert" role="alert">{{ message }}</p>
+  }
+
+  @if (accounts.isLoading()) {
+    <p>Carregando contas...</p>
+  } @else if (accounts.error()) {
+    <p role="alert">Não foi possível carregar suas contas.</p>
+    <button type="button" class="primary" (click)="accounts.reload()">Tentar de novo</button>
+  } @else if (accounts.value().length === 0) {
+    <p>Nenhuma conta ainda. Crie a primeira.</p>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Tipo</th>
+            <th scope="col" class="number">Saldo inicial</th>
+            <th scope="col">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (account of accounts.value(); track account.id) {
+            <tr [class.muted]="account.archived">
+              <td>
+                {{ account.name }}
+                @if (account.archived) {
+                  <span class="badge">Arquivada</span>
+                }
+              </td>
+              <td>{{ typeLabels[account.type] }}</td>
+              <td class="number">{{ account.initialBalance | currency: account.currency }}</td>
+              <td class="row-actions">
+                <a class="button" [routerLink]="[account.id, 'editar']">Editar</a>
+                @if (account.archived) {
+                  <button type="button" (click)="unarchive(account)">Desarquivar</button>
+                } @else {
+                  <button type="button" (click)="archive(account)">Arquivar</button>
+                }
+                <button type="button" (click)="remove(account)">Excluir</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

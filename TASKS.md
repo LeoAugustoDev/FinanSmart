@@ -13,6 +13,7 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 
 - **T-00:** concluída, com monorepo, Compose, Flyway sem migrations, perfis dev/demo, ProblemDetail, CORS, Swagger e Angular.
 - **T-01:** concluída, com login, cadastro e logout no Keycloak, guard, interceptor e endpoint `/api/v1/me`.
+- **T-02:** concluída. A RN-07 passa a valer de fato na T-04, quando os lançamentos existirem.
 
 ## Separação das tasks
 
@@ -184,13 +185,13 @@ web/src/app/features/accounts/
 
 ### Critérios de aceite
 
-- [ ] Migration aplicada pelo Flyway na subida
-- [ ] Os 7 endpoints conforme a tabela
-- [ ] RN-01 a RN-08 cobertas por testes
-- [ ] Teste de isolamento entre usuários passando
-- [ ] Tela de contas funcionando contra a API real, com login real no Keycloak e os quatro estados
-- [ ] Endpoints visíveis no Swagger
-- [ ] Testes do backend e do frontend passando
+- [x] Migration aplicada pelo Flyway na subida
+- [x] Os 7 endpoints conforme a tabela
+- [x] RN-01 a RN-08 cobertas por testes (RN-07 será completada na T-04)
+- [x] Teste de isolamento entre usuários passando
+- [x] Tela de contas funcionando contra a API real, com login real no Keycloak e os quatro estados
+- [x] Endpoints visíveis no Swagger
+- [x] Testes do backend e do frontend passando
 
 ### Git
 
