@@ -21,6 +21,8 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 - **T-07:** concluída.
 - **T-08:** concluída.
 - **T-09:** concluída, com carga única de seis meses no perfil demo.
+- **T-10:** concluída, com documentação ampliada no Swagger e guia da API.
+- **T-11:** concluída, com README e ADRs das decisões principais.
 
 ## Separação das tasks
 
