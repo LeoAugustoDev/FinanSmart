@@ -6,6 +6,10 @@ target/
 
 ### Variáveis locais ###
 .env
+finansmart-prod.env
+web/public/finansmart-local.crt
+server/api-local.log
+web/web-local.log
 
 ### STS ###
 .apt_generated

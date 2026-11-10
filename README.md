@@ -16,6 +16,14 @@ O projeto foi construído como um monorepo com API Spring Boot, aplicação Angu
 - Detector de assinaturas, tarifas, juros e gastos acima da média.
 - Perfil demo com seis meses de dados realistas.
 
+## Telas
+
+| Login | Relatório mensal | Detector de vazamentos |
+|---|---|---|
+| ![Tela de login](docs/screenshots/login.png) | ![Relatório mensal](docs/screenshots/relatorio.png) | ![Detector de vazamentos](docs/screenshots/vazamentos.png) |
+
+As capturas mostram a interface durante o desenvolvimento. Para experimentar os detectores com uma base fictícia reproduzível, consulte o [perfil demo](docs/demo.md).
+
 ## Arquitetura
 
 ```text
@@ -101,7 +109,7 @@ Consulte [docs/api.md](docs/api.md) para autenticação, exemplos, formatos de d
 
 ## Estado do projeto
 
-O MVP funcional está concluído até T-11. O deploy público e o link da demonstração pertencem à T-12.
+O MVP funcional está concluído até T-11. Este repositório apresenta o código, a documentação e instruções para execução local como projeto de portfólio.
 
 ## Licença
 
