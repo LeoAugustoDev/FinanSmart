@@ -19,6 +19,10 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
 class SecurityIntegrationTests {
+    @Autowired private org.springframework.context.ApplicationContext context;
+    @Test void demoSeederIsAbsentInDev() {
+        org.assertj.core.api.Assertions.assertThat(context.getBeansOfType(com.finansmart_server.demo.DemoDataSeeder.class)).isEmpty();
+    }
 
 	@Autowired
 	private MockMvc mvc;

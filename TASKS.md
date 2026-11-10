@@ -20,8 +20,11 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 - **T-06:** concluída.
 - **T-07:** concluída.
 - **T-08:** concluída.
+- **T-09:** concluída, com carga única de seis meses no perfil demo.
 
 ## Separação das tasks
+
+T-10: documentação ampliada no Swagger com tags, descrições, parâmetros e exemplos de erros. Guia de autenticação e exemplos de chamadas em [docs/api.md](docs/api.md).
 
 ### Fundação
 
@@ -520,3 +523,41 @@ O painel mostra o card "R$ X vazando este mês" com link para a tela, só quando
 - [x] Card "R$ X vazando este mês" no painel
 - [x] Endpoint visível no Swagger
 - [x] Testes do backend e do frontend passando
+
+---
+
+## T-09 · Dados de demonstração
+
+### Objetivo
+
+Disponibilizar seis meses de movimentação financeira para explorar o painel, os relatórios, os orçamentos e os três detectores de vazamentos com o usuário demo do Keycloak.
+
+### Depende de
+
+T-08 Detector de vazamentos.
+
+### Regras
+
+- Usuário demo com ID fixo no realm importado; `DEMO_USER_ID` permite usar o ID de um realm local previamente importado.
+- Carga automática exclusiva do perfil `demo`, desativável com `DEMO_SEED_ENABLED=false`.
+- Três contas (corrente, poupança e carteira), categoria personalizada Pets, receitas e despesas distribuídas por seis meses, oito orçamentos nos dois meses mais recentes.
+- Valores determinísticos em BRL, sem datas futuras; o período termina no mês da primeira carga.
+- Exemplos de assinaturas, recorrência fora da categoria Assinaturas, tarifas/juros e lazer acima da média, inclusive no primeiro dia do mês.
+- Carga única por usuário, registrada pela migration V5. Marcador e dados pertencem à mesma transação; reinícios não duplicam nem apagam dados.
+- Se o usuário já tiver contas ou categorias personalizadas antes da primeira carga, a inicialização é interrompida sem sobrescrevê-las.
+- Não há reset automático ou renovação mensal. Uma demonstração nova usa outra base exclusiva e vazia.
+- Outros usuários e categorias do sistema são preservados.
+
+### Execução
+
+Consulte [docs/demo.md](docs/demo.md) para configurar o perfil, a base exclusiva e a identidade em instalações existentes do Keycloak. A T-09 usa as telas e endpoints existentes; a publicação fica para T-12.
+
+### Critérios de aceite
+
+- [x] Usuário demo com ID fixo no realm versionado
+- [x] Seis meses de dados e resultados dos três detectores verificados com PostgreSQL e MockMvc
+- [x] Datas limite (primeiro dia, virada do ano e fevereiro bissexto) cobertas por testes
+- [x] Repetição, preservação de alterações, isolamento e rollback cobertos por testes
+- [x] Gerador ausente em dev e execução automática desativável
+- [x] Guia de execução e comportamento de reinício documentados
+- [x] Backend validado com 196 testes sem falhas (mvnw verify)
