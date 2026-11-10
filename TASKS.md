@@ -24,6 +24,8 @@ O login é feito pelo **Keycloak**. O FinanSmart não tem tabela de usuários e 
 
 ## Separação das tasks
 
+T-10: documentação ampliada no Swagger com tags, descrições, parâmetros e exemplos de erros. Guia de autenticação e exemplos de chamadas em [docs/api.md](docs/api.md).
+
 ### Fundação
 
 | Task | Entrega | Depende de |
