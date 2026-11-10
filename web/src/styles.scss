@@ -509,6 +509,53 @@ a {
   }
 }
 
+.leak-hero {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #fff7f5 30%, #fde3df 140%);
+  border: 1px solid #f5c2bc;
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+
+  strong {
+    color: var(--color-danger);
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  span {
+    color: var(--color-muted);
+  }
+
+  .button {
+    margin-top: 0.5rem;
+  }
+}
+
+.leak-hero-clear {
+  background: linear-gradient(135deg, #ffffff 40%, var(--color-primary-soft) 160%);
+  border-color: var(--color-border);
+
+  strong {
+    color: var(--color-primary);
+  }
+}
+
+.leak-hero-link {
+  text-decoration: none;
+  transition: box-shadow 0.12s, transform 0.12s;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(179, 38, 30, 0.08), 0 12px 28px rgba(179, 38, 30, 0.12);
+    transform: translateY(-1px);
+  }
+}
+
 .section-header {
   display: flex;
   align-items: center;

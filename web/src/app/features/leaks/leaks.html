@@ -1,0 +1,143 @@
+<section class="card">
+  <div class="page-header">
+    <h2>Detector de vazamentos</h2>
+  </div>
+
+  <div class="field filter">
+    <label for="month">Mês</label>
+    <input id="month" type="month" [value]="month()" (change)="changeMonth($event)" />
+  </div>
+
+  @if (!month()) {
+    <p>Selecione um mês para procurar vazamentos.</p>
+  } @else if (leaks.isLoading()) {
+    <p>Procurando vazamentos...</p>
+  } @else if (leaks.error()) {
+    <p role="alert">Não foi possível carregar os vazamentos.</p>
+    <button type="button" class="primary" (click)="leaks.reload()">Tentar de novo</button>
+  } @else if (leaks.value(); as data) {
+    <div class="leak-hero" id="leakTotal" [class.leak-hero-clear]="data.total === 0">
+      @if (data.total === 0) {
+        <strong>Nenhum vazamento encontrado</strong>
+        <span>
+          Não há assinaturas, tarifas, juros nem categorias acima da média neste mês. O detector
+          compara com os três meses anteriores, então fica mais preciso conforme você registra
+          seus lançamentos.
+        </span>
+        <a class="button primary" routerLink="/lancamentos/novo">Criar lançamento</a>
+      } @else {
+        <strong>{{ data.total | currency: 'BRL' }} vazando {{ period() }}</strong>
+        <span>Dinheiro que sai sem você perceber: vale revisar cada item abaixo.</span>
+      }
+    </div>
+
+    @if (data.total > 0) {
+      <div class="summary-grid">
+        <div class="summary-card" id="subscriptionsTotal">
+          <span>Assinaturas recorrentes</span>
+          <strong>{{ data.subscriptions.total | currency: 'BRL' }}</strong>
+        </div>
+        <div class="summary-card" id="feesTotal">
+          <span>Tarifas e juros</span>
+          <strong>{{ data.fees.total | currency: 'BRL' }}</strong>
+        </div>
+        <div class="summary-card" id="aboveAverageTotal">
+          <span>Gasto acima da média</span>
+          <strong>{{ data.aboveAverage.total | currency: 'BRL' }}</strong>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Assinaturas recorrentes</h3>
+      </div>
+      @if (data.subscriptions.items.length === 0) {
+        <p>Nenhuma assinatura neste mês.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table id="subscriptions">
+            <thead>
+              <tr>
+                <th scope="col">Cobrança</th>
+                <th scope="col">Categoria</th>
+                <th scope="col" class="number">Valor no mês</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (charge of data.subscriptions.items; track $index) {
+                <tr>
+                  <td>
+                    {{ charge.description ?? 'Sem descrição' }}
+                    @if (charge.recurring) {
+                      <span class="badge" title="Mesma cobrança nos dois meses anteriores">Todo mês</span>
+                    }
+                  </td>
+                  <td>{{ charge.categoryName }}</td>
+                  <td class="number">{{ charge.amount | currency: 'BRL' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="section-header">
+        <h3>Tarifas e juros</h3>
+      </div>
+      @if (data.fees.items.length === 0) {
+        <p>Nenhuma tarifa ou juro neste mês.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table id="fees">
+            <thead>
+              <tr>
+                <th scope="col">Cobrança</th>
+                <th scope="col" class="number">Valor no mês</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (charge of data.fees.items; track $index) {
+                <tr>
+                  <td>{{ charge.description ?? 'Sem descrição' }}</td>
+                  <td class="number">{{ charge.amount | currency: 'BRL' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="section-header">
+        <h3>Gasto acima da média</h3>
+      </div>
+      @if (data.aboveAverage.items.length === 0) {
+        <p>Nenhuma categoria passou em mais de 20% da média dos três meses anteriores.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table id="aboveAverage">
+            <thead>
+              <tr>
+                <th scope="col">Categoria</th>
+                <th scope="col" class="number">Gasto no mês</th>
+                <th scope="col" class="number">Média recente</th>
+                <th scope="col" class="number">Acima da média</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (overspend of data.aboveAverage.items; track overspend.categoryId) {
+                <tr>
+                  <td>{{ overspend.categoryName }}</td>
+                  <td class="number">{{ overspend.spent | currency: 'BRL' }}</td>
+                  <td class="number">{{ overspend.average | currency: 'BRL' }}</td>
+                  <td class="number change-bad">
+                    <span aria-hidden="true">▲</span>
+                    {{ overspend.excess | currency: 'BRL' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</section>

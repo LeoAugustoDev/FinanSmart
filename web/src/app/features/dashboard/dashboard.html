@@ -28,6 +28,13 @@
       </div>
     </div>
 
+    @if (leaking(); as amount) {
+      <a class="leak-hero leak-hero-link" id="leaking" routerLink="/vazamentos">
+        <strong>{{ amount | currency: 'BRL' }} vazando este mês</strong>
+        <span>Assinaturas, tarifas e gastos acima da média. Ver detalhes →</span>
+      </a>
+    }
+
     <div class="section-header">
       <h3>Contas</h3>
       <a routerLink="/contas">Ver todas</a>
